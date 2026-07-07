@@ -406,10 +406,10 @@ export function Dashboard() {
             </span>
           ))}
           <span className="text-[10px] px-2 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-600 font-medium">
-            Empty = Available
+            Green = Open
           </span>
-          <span className="text-[10px] px-2 py-1 rounded bg-gray-100 border border-gray-200 text-gray-600 font-medium">
-            Colored = Booked
+          <span className="text-[10px] px-2 py-1 rounded bg-red-600 border border-red-700 text-white font-medium">
+            Red = Booked
           </span>
         </div>
 
@@ -431,7 +431,7 @@ export function Dashboard() {
         <div className="mt-4 text-center text-xs text-gray-400">
           {isAdmin
             ? 'Admin -- full control. Click status badges to edit. Use toolbar to add companies/agents/locations.'
-            : 'Agent -- toggle slots for your team\'s companies. Changes sync live.'}
+            : 'Agent -- book open slots for your team\'s companies. Changes sync live.'}
         </div>
       </main>
     </div>

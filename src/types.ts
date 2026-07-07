@@ -69,11 +69,11 @@ export interface ScheduleRow {
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
 export type Day = (typeof DAYS)[number];
 
-export const TIME_SLOTS = ['9', '10', '11', '12', '1', '2', '3', '4', '5', '6', '7'] as const;
+export const TIME_SLOTS = ['8', '9', '10', '11', '12', '1', '2', '3', '4', '5', '6', '7'] as const;
 
 export function formatTimeAmPm(slot: string): string {
   const n = Number(slot);
-  if (n >= 9 && n <= 11) return `${slot} AM`;
+  if (n >= 8 && n <= 11) return `${slot} AM`;
   if (n === 12) return '12 PM';
   return `${slot} PM`;
 }

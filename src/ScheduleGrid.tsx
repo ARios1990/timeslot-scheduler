@@ -43,7 +43,7 @@ export function ScheduleGrid({
               Status
             </th>
             {TIME_SLOTS.map(ts => (
-              <th key={ts} className="py-3 px-0.5 text-xs font-semibold text-gray-500 border-b border-gray-200 text-center min-w-[64px]">
+              <th key={ts} className="py-3 px-0.5 text-xs font-semibold text-gray-500 border-b border-gray-200 text-center min-w-[72px]">
                 {formatTimeAmPm(ts)}
               </th>
             ))}
@@ -56,7 +56,6 @@ export function ScheduleGrid({
             const company = companies.find(c => c.id === row.companyId);
             const status = company?.account_status || 'Active';
             const isStatusEditing = editingStatus === row.id;
-            const primaryTeam = companyTeamsList[0];
 
             return (
               <tr
@@ -129,29 +128,32 @@ export function ScheduleGrid({
                 {/* Time Slots */}
                 {TIME_SLOTS.map(ts => {
                   const booked = isBooked(row.companyId, row.locationId, activeDay, ts);
+                  const canToggleSlot = editable && (!booked || isAdmin);
+
                   return (
                     <td key={ts} className="py-1 px-0.5 text-center border-b border-gray-100">
                       <button
-                        onClick={() => editable && onToggle(row.companyId, row.locationId, activeDay, ts)}
-                        disabled={!editable}
-                        className={`w-full h-8 rounded text-[8px] font-bold inline-flex items-center justify-center transition-all leading-tight px-0.5 ${
+                        onClick={() => canToggleSlot && onToggle(row.companyId, row.locationId, activeDay, ts)}
+                        disabled={!canToggleSlot}
+                        className={`w-full h-10 rounded border text-[9px] font-bold inline-flex flex-col items-center justify-center transition-all leading-tight px-0.5 ${
                           booked
-                            ? `${getTeamBgColor(primaryTeam?.abbreviation)} shadow-sm`
+                            ? isAdmin
+                              ? 'bg-red-600 border-red-700 text-white shadow-sm hover:bg-red-700'
+                              : 'bg-red-600 border-red-700 text-white shadow-sm opacity-95'
                             : editable
                               ? 'bg-emerald-50 border border-emerald-200 text-emerald-400 hover:bg-emerald-100 hover:scale-[1.03]'
                               : 'bg-gray-50 border border-gray-150 text-gray-300'
-                        } ${editable ? 'cursor-pointer' : 'cursor-default'}`}
+                        } ${canToggleSlot ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                         title={
                           booked
-                            ? `${row.companyName}${row.state ? ` - ${row.state}` : ''} (click to unbook)`
-                            : editable ? 'Available' : 'View only'
+                            ? `${formatTimeAmPm(ts)} is booked for ${row.companyName}${row.state ? ` - ${row.state}` : ''}${isAdmin ? ' (admin can unbook)' : ''}`
+                            : editable ? `${formatTimeAmPm(ts)} available` : 'View only'
                         }
                       >
-                        {booked && (
-                          <span className="truncate">
-                            {row.state || primaryTeam?.abbreviation || 'X'}
-                          </span>
-                        )}
+                        <span>{formatTimeAmPm(ts)}</span>
+                        <span className={booked ? 'text-[8px]' : 'text-[7px] font-semibold'}>
+                          {booked ? 'Booked' : 'Open'}
+                        </span>
                       </button>
                     </td>
                   );
@@ -177,20 +179,6 @@ function getTeamColor(abbr: string): string {
     NIC: 'bg-green-100 text-green-700',
   };
   return colors[abbr] || 'bg-gray-100 text-gray-700';
-}
-
-function getTeamBgColor(abbr?: string): string {
-  const colors: Record<string, string> = {
-    MRS: 'bg-blue-500 text-white',
-    BRL: 'bg-purple-500 text-white',
-    TJ: 'bg-orange-500 text-white',
-    PHL: 'bg-teal-500 text-white',
-    OCTO: 'bg-rose-500 text-white',
-    WOO: 'bg-amber-500 text-white',
-    SSL: 'bg-cyan-500 text-white',
-    NIC: 'bg-green-500 text-white',
-  };
-  return colors[abbr || ''] || 'bg-gray-500 text-white';
 }
 
 function getStatusStyle(status: string): string {

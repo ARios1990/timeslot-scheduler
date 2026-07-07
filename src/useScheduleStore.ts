@@ -121,7 +121,12 @@ export function useScheduleStore(): ScheduleStoreResult {
 
     if (existing) {
       setBookings(prev => prev.filter(b => b.id !== existing.id));
-      await supabase.from('company_bookings').delete().eq('id', existing.id);
+      const { error } = await supabase.from('company_bookings').delete().eq('id', existing.id);
+
+      if (error) {
+        console.error('Unable to clear booked slot:', error.message);
+        setBookings(prev => prev.some(b => b.id === existing.id) ? prev : [...prev, existing]);
+      }
     } else {
       const tempId = crypto.randomUUID();
       const newBooking: CompanyBooking = {
@@ -134,7 +139,7 @@ export function useScheduleStore(): ScheduleStoreResult {
         created_at: new Date().toISOString(),
       };
       setBookings(prev => [...prev, newBooking]);
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('company_bookings')
         .insert({ company_id: companyId, location_id: locationId, day, time_slot: timeSlot })
         .select()
@@ -142,6 +147,10 @@ export function useScheduleStore(): ScheduleStoreResult {
       if (data) {
         setBookings(prev => prev.map(b => b.id === tempId ? data : b));
       } else {
+        if (error) {
+          console.error('Unable to book slot:', error.message);
+          await fetchAll();
+        }
         setBookings(prev => prev.filter(b => b.id !== tempId));
       }
     }
