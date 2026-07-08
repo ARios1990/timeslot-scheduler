@@ -1,14 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from './AuthContext';
-import { Calendar, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
+import { Calendar, LogIn, Eye, EyeOff } from 'lucide-react';
 
 export function LoginPage() {
-  const { signIn, signUp } = useAuth();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [role, setRole] = useState<'admin' | 'agent'>('agent');
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,13 +15,9 @@ export function LoginPage() {
     setError('');
     setLoading(true);
 
-    if (isSignUp) {
-      const { error } = await signUp(email, password, role, displayName || email);
-      if (error) setError(error);
-    } else {
-      const { error } = await signIn(email, password);
-      if (error) setError(error);
-    }
+    const { error } = await signIn(email, password);
+    if (error) setError(error);
+
     setLoading(false);
   }
 
@@ -37,57 +30,12 @@ export function LoginPage() {
           </div>
           <h1 className="text-3xl font-bold text-white">Time Slot Scheduler</h1>
           <p className="text-slate-400 mt-2">
-            {isSignUp ? 'Create your account to get started' : 'Sign in to manage your schedule'}
+            Sign in to manage your schedule
           </p>
         </div>
 
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-          <div className="flex bg-white/5 rounded-lg p-1 mb-6">
-            <button
-              onClick={() => { setIsSignUp(false); setError(''); }}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                !isSignUp ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => { setIsSignUp(true); setError(''); }}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                isSignUp ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Create Account
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Display Name</label>
-                  <input
-                    type="text"
-                    value={displayName}
-                    onChange={e => setDisplayName(e.target.value)}
-                    placeholder="Your name"
-                    className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Role</label>
-                  <select
-                    value={role}
-                    onChange={e => setRole(e.target.value as 'admin' | 'agent')}
-                    className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="agent" className="bg-slate-800">Agent</option>
-                    <option value="admin" className="bg-slate-800">Admin</option>
-                  </select>
-                </div>
-              </>
-            )}
-
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
               <input
@@ -135,8 +83,6 @@ export function LoginPage() {
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : isSignUp ? (
-                <><UserPlus size={18} /> Create Account</>
               ) : (
                 <><LogIn size={18} /> Sign In</>
               )}
@@ -145,7 +91,7 @@ export function LoginPage() {
         </div>
 
         <p className="text-center text-xs text-slate-500 mt-4">
-          Open to everyone -- create an account and start scheduling.
+          Contact an admin if you need a login.
         </p>
       </div>
     </div>
