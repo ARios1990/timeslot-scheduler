@@ -40,6 +40,8 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
   const [newPhone, setNewPhone] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newTeam, setNewTeam] = useState('');
+  const [newRequirementsNote, setNewRequirementsNote] = useState('');
+  const [newNotes, setNewNotes] = useState('');
   const [addLoading, setAddLoading] = useState(false);
   const [addMsg, setAddMsg] = useState('');
 
@@ -56,7 +58,6 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
   const [editingCompany, setEditingCompany] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Company>>({});
   const [assigningCompany, setAssigningCompany] = useState<string | null>(null);
-  const [assignTeam, setAssignTeam] = useState('');
   const [assignTeamIds, setAssignTeamIds] = useState<string[]>([]);
   // User linking
   const [linkingProfile, setLinkingProfile] = useState<string | null>(null);
@@ -90,13 +91,15 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
       phone: newPhone.trim() || null,
       email: newEmail.trim() || null,
       team_id: newTeam || null,
+      requirements_note: newRequirementsNote.trim() || null,
+      notes: newNotes.trim() || null,
       account_status: 'Active',
     });
     if (error) {
       setAddMsg(error.message.includes('unique') ? 'Company already exists.' : error.message);
     } else {
       setAddMsg('Company added!');
-      setNewName(''); setNewState(''); setNewContact(''); setNewPhone(''); setNewEmail(''); setNewTeam('');
+      setNewName(''); setNewState(''); setNewContact(''); setNewPhone(''); setNewEmail(''); setNewTeam(''); setNewRequirementsNote(''); setNewNotes('');
       await store.refetch();
     }
     setAddLoading(false);
@@ -123,16 +126,11 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
       contact_name: editForm.contact_name || null,
       phone: editForm.phone || null,
       email: editForm.email || null,
+      requirements_note: editForm.requirements_note || null,
+      notes: editForm.notes || null,
     }).eq('id', companyId);
     setEditingCompany(null);
     setEditForm({});
-    await store.refetch();
-  }
-
-  async function assignTeamToCompany(companyId: string, teamId: string | null) {
-    await supabase.from('roster_companies').update({ team_id: teamId || null }).eq('id', companyId);
-    setAssigningCompany(null);
-    setAssignTeam('');
     await store.refetch();
   }
 
@@ -302,6 +300,7 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
                   const isHidden = c.account_status === 'Hidden';
                   const companyLocs = store.locations.filter(l => l.company_id === c.id);
                   const assignedTeams = store.getCompanyTeams(c.id);
+                  const displayNote = c.requirements_note?.trim() || c.notes?.trim();
 
                   if (isEditing) {
                     return (
@@ -313,6 +312,8 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
                             <input value={editForm.contact_name || ''} onChange={e => setEditForm(f => ({ ...f, contact_name: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[120px]" placeholder="Contact" />
                             <input value={editForm.phone || ''} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[110px]" placeholder="Phone" />
                             <input value={editForm.email || ''} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[160px]" placeholder="Email" />
+                            <textarea value={editForm.requirements_note || ''} onChange={e => setEditForm(f => ({ ...f, requirements_note: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[260px] min-h-[44px]" placeholder="Requirements note shown on time slots" />
+                            <textarea value={editForm.notes || ''} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[220px] min-h-[44px]" placeholder="Internal notes" />
                           </div>
                         </td>
                         <td className="py-2 px-3">
@@ -339,6 +340,11 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
                           {c.name}
                           {c.contact_name && <span className="text-xs text-gray-400 ml-2">({c.contact_name})</span>}
                           {companyLocs.length > 0 && <span className="text-[9px] ml-2 bg-blue-100 text-blue-600 px-1 py-0.5 rounded">{companyLocs.length} loc</span>}
+                          {displayNote && (
+                            <span title={displayNote} className="mt-1 block max-w-[280px] truncate text-[10px] font-medium text-amber-700">
+                              Note: {displayNote}
+                            </span>
+                          )}
                         </td>
                         <td className="py-2 px-3 text-gray-500 text-xs">{c.state || '-'}</td>
                         <td className="py-2 px-3">
@@ -391,7 +397,7 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
                         </td>
                         <td className="py-2 px-4 text-right">
                           <div className="flex gap-1 justify-end">
-                            <button onClick={() => { setEditingCompany(c.id); setEditForm({ name: c.name, state: c.state, contact_name: c.contact_name, phone: c.phone, email: c.email }); }} className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded" title="Edit"><Pencil size={13} /></button>
+                            <button onClick={() => { setEditingCompany(c.id); setEditForm({ name: c.name, state: c.state, contact_name: c.contact_name, phone: c.phone, email: c.email, requirements_note: c.requirements_note, notes: c.notes }); }} className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded" title="Edit"><Pencil size={13} /></button>
                             <button onClick={() => hideCompany(c.id, !isHidden)} className="p-1 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded" title={isHidden ? 'Show' : 'Hide'}>{isHidden ? <Eye size={13} /> : <EyeOff size={13} />}</button>
                             <button onClick={() => setConfirmDelete({ type: 'company', id: c.id, name: c.name })} className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded" title="Delete"><Trash2 size={13} /></button>
                           </div>
@@ -598,6 +604,24 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
                     {store.teams.map(t => <option key={t.id} value={t.id}>{t.abbreviation} - {t.name}</option>)}
                   </select>
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Requirements Note</label>
+                <textarea
+                  value={newRequirementsNote}
+                  onChange={e => setNewRequirementsNote(e.target.value)}
+                  placeholder="Small note shown under this company on the time-slot board"
+                  className="w-full min-h-[64px] px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Internal Notes</label>
+                <textarea
+                  value={newNotes}
+                  onChange={e => setNewNotes(e.target.value)}
+                  placeholder="Optional admin note"
+                  className="w-full min-h-[56px] px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
               {addMsg && <p className={`text-xs ${addMsg.includes('added') ? 'text-green-600' : 'text-red-600'}`}>{addMsg}</p>}
               <button type="submit" disabled={addLoading || !newName.trim()}

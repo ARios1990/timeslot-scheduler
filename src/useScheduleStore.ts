@@ -76,13 +76,6 @@ export function useScheduleStore(): ScheduleStoreResult {
     return [];
   }, [companyTeams, teams, companies]);
 
-  const getCompanyTeamIds = useCallback((companyId: string): string[] => {
-    const assignments = companyTeams.filter(ct => ct.company_id === companyId);
-    if (assignments.length > 0) return assignments.map(ct => ct.team_id);
-    const company = companies.find(c => c.id === companyId);
-    return company?.team_id ? [company.team_id] : [];
-  }, [companyTeams, companies]);
-
   const scheduleRows: ScheduleRow[] = useMemo(() => {
     const rows: ScheduleRow[] = [];
     for (const company of companies) {

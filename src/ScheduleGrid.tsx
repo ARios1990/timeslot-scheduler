@@ -56,6 +56,7 @@ export function ScheduleGrid({
             const company = companies.find(c => c.id === row.companyId);
             const status = company?.account_status || 'Active';
             const isStatusEditing = editingStatus === row.id;
+            const companyNote = company?.requirements_note?.trim() || company?.notes?.trim() || '';
 
             return (
               <tr
@@ -77,6 +78,14 @@ export function ScheduleGrid({
                         <span className="text-[11px] text-gray-500">{row.state}</span>
                       ) : null}
                     </div>
+                    {companyNote && (
+                      <span
+                        title={companyNote}
+                        className="mt-1 block max-w-[230px] truncate rounded bg-amber-50 border border-amber-100 px-1.5 py-0.5 text-[10px] font-medium leading-tight text-amber-700"
+                      >
+                        Note: {companyNote}
+                      </span>
+                    )}
                   </div>
                 </td>
 

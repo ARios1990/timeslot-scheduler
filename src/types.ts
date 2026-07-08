@@ -16,6 +16,8 @@ export interface Company {
   metro_tag: string | null;
   website: string | null;
   client_id: string | null;
+  requirements_note: string | null;
+  notes: string | null;
 }
 
 export interface CompanyLocation {
