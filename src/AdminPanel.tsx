@@ -312,7 +312,7 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
                             <input value={editForm.contact_name || ''} onChange={e => setEditForm(f => ({ ...f, contact_name: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[120px]" placeholder="Contact" />
                             <input value={editForm.phone || ''} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[110px]" placeholder="Phone" />
                             <input value={editForm.email || ''} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[160px]" placeholder="Email" />
-                            <textarea value={editForm.requirements_note || ''} onChange={e => setEditForm(f => ({ ...f, requirements_note: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[260px] min-h-[44px]" placeholder="Requirements note shown on time slots" />
+                            <textarea value={editForm.requirements_note || ''} onChange={e => setEditForm(f => ({ ...f, requirements_note: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[320px] min-h-[84px]" placeholder="Requirements note shown on time slots" />
                             <textarea value={editForm.notes || ''} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} className="px-2 py-1 text-xs border rounded w-[220px] min-h-[44px]" placeholder="Internal notes" />
                           </div>
                         </td>
@@ -611,7 +611,7 @@ export function AdminPanel({ store, onClose, initialTab }: AdminPanelProps) {
                   value={newRequirementsNote}
                   onChange={e => setNewRequirementsNote(e.target.value)}
                   placeholder="Small note shown under this company on the time-slot board"
-                  className="w-full min-h-[64px] px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[104px] px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
