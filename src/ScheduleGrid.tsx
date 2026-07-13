@@ -79,17 +79,12 @@ export function ScheduleGrid({
                       ) : null}
                     </div>
                     {companyNote && (
-                      <div
+                      <span
                         title={companyNote}
-                        className="mt-2 max-w-[240px] rounded-md border border-amber-300 bg-amber-100 px-2.5 py-1.5 text-[11px] font-semibold leading-snug text-amber-900 shadow-sm"
+                        className="mt-1 block max-w-[230px] truncate rounded bg-amber-50 border border-amber-100 px-1.5 py-0.5 text-[10px] font-medium leading-tight text-amber-700"
                       >
-                        <span className="block text-[9px] font-bold uppercase text-amber-700">
-                          Requirements
-                        </span>
-                        <span className="block whitespace-normal break-words">
-                          {companyNote}
-                        </span>
-                      </div>
+                        Note: {companyNote}
+                      </span>
                     )}
                   </div>
                 </td>
